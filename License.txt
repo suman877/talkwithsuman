@@ -1,0 +1,55 @@
+TalkWithSuman Proprietary License
+
+Copyright (c) 2025 Suman. All rights reserved.
+
+Description: TalkWithSuman is a secure, private chat app built with Firebase. Create or join rooms, send messages with emojis, and customize backgrounds. Room creators approve join requests, ensuring controlled access. User names are visible, and real-time typing indicators enhance the chat experience.
+
+
+
+
+
+License Grant Suman ("Licensor") grants you ("Licensee") a limited, non-exclusive, non-transferable, non-sublicensable license to use TalkWithSuman for personal, non-commercial purposes only, subject to the terms of this License.
+
+
+
+Restrictions You may not:
+
+
+
+
+
+Copy, modify, distribute, or create derivative works of the software.
+
+
+
+Reverse engineer, decompile, or disassemble the software.
+
+
+
+Use the software for commercial purposes or sublicense it.
+
+
+
+Remove any copyright or proprietary notices.
+
+
+
+Ownership All rights, title, and interest in TalkWithSuman, including intellectual property, remain with Licensor. No ownership is transferred.
+
+
+
+Termination This License terminates if you breach any term. You must then cease use and destroy all copies of the software.
+
+
+
+No Warranty The software is provided "as is" without any warranties, express or implied, including fitness for a particular purpose.
+
+
+
+Limitation of Liability Licensor is not liable for any damages (direct, indirect, incidental, or consequential) arising from the use of the software.
+
+
+
+Contact For inquiries, contact [your-contact-info@domain.com].
+
+Last updated: August 14, 2025
