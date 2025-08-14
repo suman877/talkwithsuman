@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TalkWithSuman</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <h1>TalkWithSuman✨</h1>
+  <p>Create or join your private chat room:</p>
+  <button id="createBtn">Create Private Room</button>
+  <button id="joinBtn">Join Private Room</button>
+
+  <h2>Admin Access</h2>
+<div id="adminLoginDiv" class="admin-login">
+  <input type="password" id="adminInput" placeholder="Enter admin password">
+  <button id="adminBtn">Login as Admin</button>
+</div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="firebase.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const createBtn = document.getElementById("createBtn");
+  const joinBtn = document.getElementById("joinBtn");
+  const adminBtn = document.getElementById("adminBtn");
+
+  // Create private room
+  createBtn.addEventListener("click", () => {
+    if(!confirm("Create a private chat room?")) return;
+    const roomId = 'room_' + Math.random().toString(36).substring(2,8);
+    const password = Math.random().toString(36).substring(2,7);
+    const link = `private.html?room=${roomId}&pwd=${password}`;
+
+    // Save to Firestore with default 48h expiry
+    db.collection("privateRooms").doc(roomId).set({
+      roomId,
+      password,
+      link,
+      createdAt: Date.now(),
+      expiry: Date.now() + 48*60*60*1000
+    }).then(() => {
+      alert(`Room created!\nCopy link & password:\nLink: ${link}\nPassword: ${password}`);
+      navigator.clipboard.writeText(`Link: ${link}\nPassword: ${password}`);
+      window.location.href = link;
+    });
+  });
+
+  // Join private room
+  joinBtn.addEventListener("click", () => {
+    const roomId = prompt("Enter Room ID:");
+    if(!roomId){ alert("Room ID required!"); return; }
+    const password = prompt("Enter Room Password:");
+    if(!password){ alert("Password required!"); return; }
+    window.location.href = `private.html?room=${roomId}&pwd=${password}`;
+  });
+
+  // Admin login with hidden password input
+  adminBtn.addEventListener("click", () => {
+    const adminPwd = document.getElementById("adminInput").value;
+    if(adminPwd !== "sum77access"){
+      alert("Incorrect password!");
+      document.getElementById("adminInput").value = "";
+      return;
+    }
+    window.location.href = "admin.html";
+  });
+});
+</script>
+</body>
+</html>

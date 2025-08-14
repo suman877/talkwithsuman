@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel - TalkWithSuman</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .link-row { display:flex; justify-content:space-between; align-items:center; padding:8px; margin-bottom:5px; background:rgba(102,166,255,0.1); border-radius:8px;}
+  .timer-bar { height:6px; border-radius:3px; background:#66a6ff; transition:width 1s linear;}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Admin Panel</h1>
+
+  <div>
+    <button id="createLinkBtn">Create Private Chat Link</button>
+    <label>Set Timer (minutes):
+      <input type="number" id="linkTimerInput" value="60" min="1" max="2880">
+    </label>
+  </div>
+
+  <h3>Generated Links</h3>
+  <div id="linksContainer"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="firebase.js"></script>
+<script>
+const linksContainer = document.getElementById("linksContainer");
+const createBtn = document.getElementById("createLinkBtn");
+const timerInput = document.getElementById("linkTimerInput");
+
+const adminPassword = "sum77access";
+
+async function verifyAdmin() {
+  const pwd = password("Enter admin password:");
+  if(pwd!==adminPassword){ alert("Incorrect password!"); window.location.href="index.html"; }
+
+}
+verifyAdmin();
+
+function displayLinks() {
+  db.collection("privateRooms").orderBy("expiry").onSnapshot(snapshot => {
+    linksContainer.innerHTML = "";
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const row = document.createElement("div");
+      row.className="link-row";
+
+      const linkText = document.createElement("span");
+      linkText.textContent = `Room: ${doc.id} | Expires in: --:--`;
+      row.appendChild(linkText);
+
+      const copyBtn = document.createElement("button");
+      copyBtn.textContent="Copy Link";
+      copyBtn.onclick = ()=>{ navigator.clipboard.writeText(`private.html?room=${doc.id}&pwd=${data.pwd}`); };
+      row.appendChild(copyBtn);
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent="Delete";
+      deleteBtn.onclick = ()=>{ doc.ref.delete(); };
+      row.appendChild(deleteBtn);
+
+      const progress = document.createElement("div");
+      progress.className="timer-bar";
+      row.appendChild(progress);
+
+      linksContainer.appendChild(row);
+
+      // Animate countdown
+      const updateTimer = () => {
+        const now = Date.now();
+        let diff = data.expiry - now;
+        if(diff<=0){ row.remove(); return; }
+        const minutes = Math.floor(diff/60000);
+        const seconds = Math.floor((diff%60000)/1000);
+        linkText.textContent = `Room: ${doc.id} | Expires in: ${minutes}:${seconds.toString().padStart(2,'0')}`;
+        const percent = ((data.expiry - now) / (data.expiry - (data.expiry-(timerInput.value*60000))))*100;
+        progress.style.width = percent + "%";
+      };
+      setInterval(updateTimer,1000);
+    });
+  });
+}
+displayLinks();
+
+createBtn.addEventListener("click", async () => {
+  const roomId = 'room_' + Math.random().toString(36).substring(2,8);
+  const pwd = Math.random().toString(36).substring(2,7);
+  const duration = parseInt(timerInput.value) || 60; // default 60 mins
+  const expiry = Date.now() + duration*60*1000;
+  await db.collection("privateRooms").doc(roomId).set({pwd, expiry});
+  alert(`Link Created!\nRoom: ${roomId}\nPassword: ${pwd}\nExpires in: ${duration} minutes`);
+});
+</script>
+</body>
+</html>
